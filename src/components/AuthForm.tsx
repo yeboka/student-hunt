@@ -11,6 +11,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // Валидация с использованием Zod
 const validationSchema = z.object({
+  first_name: z.string().min(1, "Имя обязательно").optional(),
+  last_name: z.string().min(1, "Фамилия обязательна").optional(),
   email: z.string().email("Некорректный email").min(1, "Поле обязательно"),
   password: z.string().min(6, "Пароль должен быть не менее 6 символов"),
   confirmPassword: z.string().optional(),
@@ -43,6 +45,35 @@ export const AuthForm = ({ mode, onSubmit }: AuthFormProps) => {
         />
         {errors.email && <span className="text-red-500">{errors.email.message}</span>}
       </div>
+
+      {mode === "register" && (
+        <div className="flex flex-col gap-2">
+          <label>Имя</label>
+          <Controller
+            name="first_name"
+            control={control}
+            render={({ field }) => (
+              <Input {...field} type={"text"} placeholder="Жандос" className={"w-[300px]"} />
+            )}
+          />
+          {errors.first_name && <span className="text-red-500">{errors.first_name.message}</span>}
+        </div>
+      )}
+
+      {mode === "register" && (
+        <div className="flex flex-col gap-2">
+          <label>Фамилия</label>
+          <Controller
+            name="last_name"
+            control={control}
+            render={({ field }) => (
+              <Input {...field} type={"text"} placeholder="Махамбет" className={"w-[300px]"} />
+            )}
+          />
+          {errors.last_name && <span className="text-red-500">{errors.last_name.message}</span>}
+
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         <label>Пароль</label>

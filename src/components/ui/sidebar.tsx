@@ -25,6 +25,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -346,19 +349,57 @@ function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
+function SidebarFooter({ className }: React.ComponentProps<"div">) {
+  const [user, setUser] = useState<{ first_name: string; last_name: string } | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // Запрос на получение данных профиля пользователя
+      fetch("http://localhost:8080/api/auth/profile", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((response) => response.text()) // Сначала получаем текстовый ответ
+        .then((data) => {
+          try {
+            const jsonData = JSON.parse(data); // Пробуем преобразовать текст в JSON
+            if (jsonData.first_name && jsonData.last_name) {
+              setUser(jsonData);
+            }
+          } catch (err) {
+            console.error("Invalid JSON response:", data, err); // Если не JSON, выводим текст ошибки
+          }
+        })
+        .catch((err) => console.error("Error fetching profile:", err));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+    window.location.reload();
+  };
+
   return (
-    <div
-      data-slot="sidebar-footer"
-      data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2 bg-[#0A6F6F] color-white", className)}
-      {...props}
-    >
-      <Link href={"/login"}>
-        <Button>
-          Log In
-        </Button>
-      </Link>
+    <div className={"sidebar bg-[#0A6F6F] p-5 " + className}>
+      <div className="sidebar-header bg-[#EDFFBB] rounded-md p-3 gap-5">
+        {user && (
+          <div className="text-[#0A6F6F] font-semibold flex gap-5 mb-3">
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <p>{user.first_name} {user.last_name}</p>
+          </div>
+        )}
+        {user ? <Button onClick={handleLogout}>Logout</Button> :
+          <Link href={"/login"}>
+            <Button>Log In</Button>
+          </Link>}
+      </div>
     </div>
   );
 }
