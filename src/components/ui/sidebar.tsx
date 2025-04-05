@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, } from 
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "@/components/ui/tooltip"
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
@@ -339,6 +340,7 @@ function SidebarHeader({className, ...props}: React.ComponentProps<"div">) {
 
 function SidebarFooter({className}: React.ComponentProps<"div">) {
   const [user, setUser] = useState<{ first_name: string; last_name: string } | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -364,11 +366,17 @@ function SidebarFooter({className}: React.ComponentProps<"div">) {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+    window.location.reload();
+  };
+
   return (
     <div className={"sidebar bg-[#0A6F6F] p-5 " + className}>
       <div className="sidebar-header bg-[#EDFFBB] rounded-md p-3 gap-5">
         {user && (
-          <Link className="text-[#0A6F6F] font-semibold flex gap-5" href={"/profile"}>
+          <Link className="text-[#0A6F6F] font-semibold flex gap-5 mb-5" href={"/profile"}>
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
               <AvatarFallback>CN</AvatarFallback>
@@ -376,7 +384,7 @@ function SidebarFooter({className}: React.ComponentProps<"div">) {
             <p>{user.first_name} {user.last_name}</p>
           </Link>
         )}
-        {!user &&
+        {user ? <Button onClick={handleLogout}>Log Out</Button> :
             <Link href={"/login"}>
                 <Button>Log In</Button>
             </Link>}
