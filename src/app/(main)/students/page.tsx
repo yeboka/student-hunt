@@ -35,7 +35,7 @@ const StudentsPage = () => {
 
   return (
     <div className={"w-full flex justify-center"}>
-      <div className={"flex w-full max-w-[1120px] flex-col items-center"}>
+      <div className={"flex w-full max-w-[1120px] flex-col items-center p-4"}>
         <div className={"flex items-center justify-center gap-5 p-5"}>
           <Input
             value={search}
@@ -52,7 +52,7 @@ const StudentsPage = () => {
         {loading ? (
           <p>Загрузка...</p>
         ) : (
-          <div className={"w-full flex flex-wrap gap-4"}>
+          <div className={"w-full flex flex-wrap gap-4 "}>
             {students.map((student) => (
               <StudentCard key={student.id} student={student} />
             ))}

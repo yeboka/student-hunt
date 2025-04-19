@@ -5,12 +5,15 @@ import { useParams } from "next/navigation";
 import API from "@/lib/axios";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import ApplyDialog from "@/components/modals/ApplyDialog"; // Импортируем новый компонент
 
 export default function JobDetailsPage() {
   const params = useParams();
   const jobId = params?.id;
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setDialogOpen] = useState(false); // Состояние для поп-апа
+  const [hasApplied, setHasApplied] = useState(false); // Состояние для проверки, подался ли пользователь
 
   const fetchJob = async () => {
     try {
@@ -23,8 +26,29 @@ export default function JobDetailsPage() {
     }
   };
 
+  const checkApplicationStatus = async () => {
+    try {
+      const res = await API.get(`/applications/${jobId}/status`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Используем токен из LocalStorage
+        },
+      });
+
+      if (res.data.applied) {
+        setHasApplied(true);
+      } else {
+        setHasApplied(false);
+      }
+    } catch (err) {
+      console.error("Ошибка при проверке статуса отклика:", err);
+    }
+  };
+
   useEffect(() => {
-    if (jobId) fetchJob();
+    if (jobId) {
+      fetchJob();
+      checkApplicationStatus(); // Проверка статуса отклика при загрузке страницы
+    }
   }, [jobId]);
 
   if (loading) return <div className="p-10">Загрузка...</div>;
@@ -83,7 +107,15 @@ export default function JobDetailsPage() {
 
         {/* Apply Button */}
         <div className="mt-6">
-          <Button className="bg-green-500 text-white">Откликнуться</Button>
+          {hasApplied ? (
+            <Button className="bg-gray-500 text-white" disabled>
+              Вы уже откликнулись
+            </Button>
+          ) : (
+            <Button onClick={() => setDialogOpen(true)} className="bg-green-500 text-white">
+              Откликнуться
+            </Button>
+          )}
         </div>
       </div>
 
@@ -95,6 +127,9 @@ export default function JobDetailsPage() {
           {/* <JobCard /> */}
         </div>
       </div>
+
+      {/* Окно отклика */}
+      <ApplyDialog jobId={jobId as any} isOpen={isDialogOpen} onClose={() => setDialogOpen(false)} setHasApplied={setHasApplied} />
     </div>
   );
 }

@@ -13,9 +13,10 @@ interface JobCardProps {
     timezone?: string;
     logo?: string;
   };
+  isApplied: boolean;  // Статус, подался ли пользователь
 }
 
-export default function JobCard({ job }: JobCardProps) {
+export default function JobCard({ job, isApplied }: JobCardProps) {
   return (
     <Link
       href={`/vacancies/${job.id}`}
@@ -67,6 +68,11 @@ export default function JobCard({ job }: JobCardProps) {
           <Clock size={14} />
           <span>{job.timezone || "Время любое"}</span>
         </div>
+      </div>
+
+      {/* Applied Status */}
+      <div className="mt-2">
+        {isApplied && <span className="text-sm text-green-500">Вы уже откликнулись на эту вакансию</span>}
       </div>
     </Link>
   );

@@ -15,8 +15,8 @@ interface ProjectCardProps {
 
 function ProjectCard({ job }: ProjectCardProps) {
   return (
-    <div className="max-w-sm rounded-lg border bg-white shadow-md p-2 flex flex-col justify-between gap-2">
-      <div className={"p-3 bg-[#E4EFE7] rounded-md"}>
+    <div className="w-[320px] rounded-lg border bg-white shadow-md p-2 flex flex-col justify-between gap-2">
+      <div className={"p-3 bg-[#E4EFE7] rounded-md w-full"}>
         <div className="flex justify-between items-center mb-4">
           <span className="text-lg font-semibold text-gray-800">{`${job.salary} $` || "$--"}</span>
           <button className="text-gray-500 hover:text-gray-700">
@@ -25,7 +25,7 @@ function ProjectCard({ job }: ProjectCardProps) {
         </div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
       </div>
-      <div className={"flex items-center justify-between"}>
+      <div className={"flex items-center justify-between w-full"}>
         <div className={"flex items-center gap-3"}>
           <Avatar>
             <AvatarImage src={job.logo || "https://github.com/shadcn.png"} alt="@logo" />

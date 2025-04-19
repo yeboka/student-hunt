@@ -10,7 +10,10 @@ import API from "@/lib/axios";
 import EditProfileModal from "@/app/(main)/profile/EditProfileModal";
 import AddExperienceModal from "@/app/(main)/profile/AddExperienceModal";
 import EditExperienceModal from "@/app/(main)/profile/EditExperienceModal";
-import ExperienceCard from "@/components/shared/ExperienceCard"; // импортируем инстанс axios
+import ExperienceCard from "@/components/shared/ExperienceCard";
+import MyJobCard from "@/components/shared/MyJobCart";
+import EditJobModal from "@/components/modals/EditJobModal";
+import CreateJobModal from "@/components/modals/CreateJobModal"; // импортируем инстанс axios
 
 const jobCards = Array.from({ length: 10 }, (_, i) => i + 1);
 
@@ -20,12 +23,20 @@ export default function Profile() {
   const [error, setError] = useState<string | null>(null); // Стейт ошибки
   const [selectedExperience, setSelectedExperience] = useState<any>(null); // Стейт для выбранного опыта
   const [isAddExperienceModalOpen, setIsAddExperienceModalOpen] = useState<boolean>(false); // Стейт для модалки добавления опыта
+  const [jobs, setJobs] = useState<any[]>([]); // Стейт для вакансий
+  const [selectedJob, setSelectedJob] = useState<any>(null); // Стейт для выбранной вакансии
+  const [isJobModalOpen, setIsJobModalOpen] = useState<boolean>(false); // Стейт для открытия модалки вакансии
+  const [isCreateJobModalOpen, setIsCreateJobModalOpen] = useState<boolean>(false); // Стейт для открытия модалки создания вакансии
+  const [isApplicantsModalOpen, setIsApplicantsModalOpen] = useState<boolean>(false); // Стейт для открытия модалки откликов
+  const [applicants, setApplicants] = useState<any[]>([]); // Стейт для списка откликов
 
   // Функция для получения профиля
   const fetchProfile = async () => {
     try {
-      const response = await API.get("/profile"); // Используем наш инстанс Axios
+      const response = await API.get("/profile");
+      const userCreatedJobs = await API.get("/jobs/user")// Используем наш инстанс Axios
       setUser(response.data); // Устанавливаем данные пользователя в стейт
+      setJobs(userCreatedJobs.data);
     } catch (err: any) {
       setError("Ошибка при загрузке профиля"); // Обработка ошибки
     } finally {
@@ -58,6 +69,55 @@ export default function Profile() {
   const closeAddExperienceModal = () => {
     setIsAddExperienceModalOpen(false);
   };
+
+  const openJobModal = (job: any) => {
+    setSelectedJob(job); // Устанавливаем выбранную вакансию
+    setIsJobModalOpen(true); // Открываем модалку
+  };
+
+  // Функция для закрытия модалки редактирования вакансии
+  const closeJobModal = () => {
+    setIsJobModalOpen(false); // Закрываем модалку
+    setSelectedJob(null); // Очищаем выбранную вакансию
+  };
+
+  const openCreateJobModal = () => {
+    setIsCreateJobModalOpen(true); // Открываем модалку создания вакансии
+  };
+
+  // Функция для закрытия модалки создания вакансии
+  const closeCreateJobModal = () => {
+    setIsCreateJobModalOpen(false); // Закрываем модалку
+  };
+
+  // Функция для удаления вакансии
+  const handleDeleteJob = async (jobId: number) => {
+    try {
+      const response = await API.delete(`/jobs/${jobId}`);
+      if (response.status === 200) {
+        fetchProfile(); // Перезагружаем профиль и вакансии
+      }
+    } catch (error) {
+      console.error("Ошибка при удалении вакансии:", error);
+    }
+  };
+
+  const openApplicantsModal = async (jobId: number) => {
+    try {
+      const res = await API.get(`/jobs/${jobId}/applicants`); // Запрашиваем отклики на вакансию
+      setApplicants(res.data); // Устанавливаем отклики в стейт
+      setIsApplicantsModalOpen(true); // Открываем модалку с откликами
+    } catch (err) {
+      console.error("Ошибка при получении откликов:", err);
+    }
+  };
+
+  // Функция для закрытия модалки откликов
+  const closeApplicantsModal = () => {
+    setIsApplicantsModalOpen(false); // Закрываем модалку
+    setApplicants([]); // Очищаем список откликов
+  };
+
 
 
   if (loading) {
@@ -156,6 +216,51 @@ export default function Profile() {
         <AddExperienceModal
           onClose={closeAddExperienceModal} // Закрытие модалки
           onUpdate={fetchProfile} // Обновление профиля после добавления нового опыта
+        />
+      )}
+
+      {/* Карточки вакансий */}
+      <div className="mt-6 w-full max-w-[1120px]">
+        <div className={"w-full flex justify-between"}>
+          <h2 className="text-2xl font-semibold mb-4">Мои вакансии</h2>
+          <Button variant="outline" onClick={openCreateJobModal}>Создать вакансию</Button>
+        </div>
+        <div className="w-full flex flex-wrap gap-6">
+          {!jobs.length && <div>
+              Пока нет вакансий
+          </div> }
+          {jobs.map((job) => (
+            <div key={job.id} className="w-[300px] flex flex-col">
+              <MyJobCard job={job} onEdit={() => openJobModal(job)} onDelete={() => handleDeleteJob(job.id)} />
+              <Button onClick={() => openApplicantsModal(job.id)} className="mt-2 bg-blue-500 text-white">
+                Просмотреть отклики
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Модалка редактирования вакансии */}
+      {isJobModalOpen && (
+        <EditJobModal
+          job={selectedJob}
+          onClose={closeJobModal} // Закрытие модалки
+          onUpdate={fetchProfile} // Обновление списка вакансий после редактирования
+        />
+      )}
+
+      {isCreateJobModalOpen && (
+        <CreateJobModal
+          onClose={closeCreateJobModal} // Закрытие модалки
+          onCreate={fetchProfile} // Обновление списка вакансий после создания новой
+        />
+      )}
+
+      {/* Модалка откликов */}
+      {isApplicantsModalOpen && (
+        <ApplicantsModal
+          applicants={applicants}
+          onClose={closeApplicantsModal} // Закрытие модалки
         />
       )}
     </div>

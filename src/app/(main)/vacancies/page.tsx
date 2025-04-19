@@ -17,6 +17,8 @@ const Vacancies = () => {
       const res = await API.get("/jobs/search", {
         params: { query: query || "" },
       });
+
+      // Добавляем полученные вакансии в состояние
       setJobs(res.data);
     } catch (error) {
       console.error("Ошибка при получении вакансий:", error);
@@ -35,7 +37,7 @@ const Vacancies = () => {
 
   return (
     <div className={"w-full flex justify-center"}>
-      <div className={"flex w-full max-w-[1120px] flex-col items-center"}>
+      <div className={"flex w-full max-w-[1120px] flex-col items-center p-4"}>
         {/* Поисковая строка */}
         <div className={"flex items-center justify-center gap-5 p-5"}>
           <Input
@@ -58,7 +60,7 @@ const Vacancies = () => {
         ) : (
           <div className={"w-full flex flex-wrap gap-4"}>
             {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <JobCard key={job.id} job={job} isApplied={job.isApplied} />
             ))}
           </div>
         )}

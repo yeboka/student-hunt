@@ -6,25 +6,34 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import ProjectCard from "@/components/shared/ProjectCard";
-import API from "@/lib/axios"; // твой axios инстанс
+import API from "@/lib/axios";
+import useSwitchState from "@/hooks/useSwitchState";
+import StudentCard from "@/components/shared/StudentCard";
+import JobCard from "@/components/shared/JobCart"; // твой axios инстанс
 
 export default function Home() {
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isChecked, setIsChecked] = useSwitchState("isStudent", false);
 
   // Фетчим вакансии при загрузке
   useEffect(() => {
-    fetchJobs();
-  }, []);
+    setLoading(true);
+    if (!isChecked) {
+      fetchStudents("").finally(() => setLoading(false));
+    } else {
+      fetchJobs("").finally(() => setLoading(false));
+    }
+  }, [isChecked]);
 
   const fetchJobs = async (query?: string) => {
-    setLoading(true);
+
     try {
       const res = await API.get("/jobs/search", {
         params: { query: query || "" },
       });
-      setJobs(res.data);
+      setItems(res.data);
     } catch (error) {
       console.error("Ошибка при загрузке вакансий:", error);
     } finally {
@@ -32,9 +41,26 @@ export default function Home() {
     }
   };
 
-  const handleSearch = () => {
-    fetchJobs(search);
+  const fetchStudents = async (query?: string) => {
+    try {
+      const res = await API.get("/students/search", {
+        params: { query: query || "" },
+      });
+      setItems(res.data);
+    } catch (error) {
+      console.error("Ошибка при загрузке вакансий:", error);
+    }
   };
+
+  const handleSearch = () => {
+    setLoading(true);
+    if (!isChecked) {
+      fetchStudents(search).finally(() => setLoading(false));
+    } else {
+      fetchJobs(search).finally(() => setLoading(false));
+    }
+  };
+
 
   return (
     <div className="flex flex-col w-full items-center">
@@ -43,7 +69,10 @@ export default function Home() {
         <SidebarTrigger />
         <div className={"flex gap-3 items-center"}>
           <p>Student mode</p>
-          <Switch />
+          <Switch
+            checked={isChecked}
+            onCheckedChange={setIsChecked}
+          />
         </div>
       </div>
 
@@ -63,16 +92,17 @@ export default function Home() {
       {/*Cards container*/}
       <div className={"p-5 w-full max-w-[1120px]"}>
         <h1 className="text-2xl font-semibold text-gray-900 mb-5">
-          {search ? "Результаты поиска" : "Подходящие вакансии"}
+          {search ? "Результаты поиска" : `Подходящие ${isChecked ? "вакансии" : "студенты"}`}
         </h1>
 
         {loading ? (
           <p>Загрузка вакансий...</p>
         ) : (
           <div className="flex flex-wrap gap-4">
-            {jobs.map((job) => (
-              <ProjectCard key={job.id} job={job} />
-            ))}
+            {items.map((item) => {
+              if (isChecked) return <JobCard key={item.id} job={item}/>
+              else return <StudentCard key={item.id} student={item}/>
+            })}
           </div>
         )}
       </div>
