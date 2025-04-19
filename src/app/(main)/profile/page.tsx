@@ -13,7 +13,8 @@ import EditExperienceModal from "@/app/(main)/profile/EditExperienceModal";
 import ExperienceCard from "@/components/shared/ExperienceCard";
 import MyJobCard from "@/components/shared/MyJobCart";
 import EditJobModal from "@/components/modals/EditJobModal";
-import CreateJobModal from "@/components/modals/CreateJobModal"; // импортируем инстанс axios
+import CreateJobModal from "@/components/modals/CreateJobModal";
+import ApplicantsModal from "@/components/modals/ApplicantsModal"; // импортируем инстанс axios
 
 const jobCards = Array.from({ length: 10 }, (_, i) => i + 1);
 
