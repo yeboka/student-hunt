@@ -12,7 +12,7 @@ interface ApplyDialogProps {
   jobId: string;  // ID вакансии
   isOpen: boolean;  // Статус открытия поп-апа
   onClose: () => void;
-  setHasApplied: (boolean) => void;// Функция для закрытия поп-апа
+  setHasApplied: (bool: boolean) => void;// Функция для закрытия поп-апа
 }
 
 const ApplyDialog = ({ jobId, isOpen, onClose, setHasApplied }: ApplyDialogProps) => {

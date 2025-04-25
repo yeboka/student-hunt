@@ -5,7 +5,6 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import ProjectCard from "@/components/shared/ProjectCard";
 import API from "@/lib/axios";
 import useSwitchState from "@/hooks/useSwitchState";
 import StudentCard from "@/components/shared/StudentCard";

@@ -13,7 +13,7 @@ interface JobCardProps {
     timezone?: string;
     logo?: string;
   };
-  isApplied: boolean;  // Статус, подался ли пользователь
+  isApplied?: boolean;  // Статус, подался ли пользователь
 }
 
 export default function JobCard({ job, isApplied }: JobCardProps) {

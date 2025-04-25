@@ -26,25 +26,26 @@ export default function JobDetailsPage() {
     }
   };
 
-  const checkApplicationStatus = async () => {
-    try {
-      const res = await API.get(`/applications/${jobId}/status`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Используем токен из LocalStorage
-        },
-      });
-
-      if (res.data.applied) {
-        setHasApplied(true);
-      } else {
-        setHasApplied(false);
-      }
-    } catch (err) {
-      console.error("Ошибка при проверке статуса отклика:", err);
-    }
-  };
 
   useEffect(() => {
+    const checkApplicationStatus = async () => {
+      try {
+        const res = await API.get(`/applications/${jobId}/status`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Используем токен из LocalStorage
+          },
+        });
+
+        if (res.data.applied) {
+          setHasApplied(true);
+        } else {
+          setHasApplied(false);
+        }
+      } catch (err) {
+        console.error("Ошибка при проверке статуса отклика:", err);
+      }
+    };
+
     if (jobId) {
       fetchJob();
       checkApplicationStatus(); // Проверка статуса отклика при загрузке страницы

@@ -16,7 +16,6 @@ import EditJobModal from "@/components/modals/EditJobModal";
 import CreateJobModal from "@/components/modals/CreateJobModal";
 import ApplicantsModal from "@/components/modals/ApplicantsModal"; // импортируем инстанс axios
 
-const jobCards = Array.from({ length: 10 }, (_, i) => i + 1);
 
 export default function Profile() {
   const [user, setUser] = useState<any>(null); // Стейт для пользователя
@@ -39,6 +38,7 @@ export default function Profile() {
       setUser(response.data); // Устанавливаем данные пользователя в стейт
       setJobs(userCreatedJobs.data);
     } catch (err: any) {
+      console.log("Ошибка при загрузке профиля", err)
       setError("Ошибка при загрузке профиля"); // Обработка ошибки
     } finally {
       setLoading(false); // Останавливаем загрузку

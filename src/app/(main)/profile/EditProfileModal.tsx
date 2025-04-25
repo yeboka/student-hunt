@@ -89,17 +89,6 @@ export default function EditProfileModal({ user, onClose, onUpdate }: EditProfil
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="bio" className="text-sm font-medium">Биография</label>
-              <Input
-                id="bio"
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="flex flex-col">
               <label htmlFor="description" className="text-sm font-medium">Описание</label>
               <Input
                 id="description"

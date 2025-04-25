@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import API from "@/lib/axios";
-import JobCard from "@/components/shared/JobCart";
 import EditJobModal from "@/components/modals/EditJobModal";
 import CreateJobModal from "@/components/modals/CreateJobModal";
 import ApplicantsModal from "@/components/modals/ApplicantsModal";
