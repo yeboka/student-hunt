@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Calendar, Clock, MapPin, Share2, Star } from "lucide-react";
+import { Calendar, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 
 interface JobCardProps {
@@ -26,20 +26,18 @@ export default function JobCard({ job, isApplied }: JobCardProps) {
       <div className="flex justify-between items-start">
         <div className="w-10 h-10 relative">
           <Image
-            src={job.logo || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"}
+            src={job.logo || "https://cdn-icons-png.freepik.com/256/4300/4300059.png"}
             alt={`${job.company_name} Logo`}
             fill
-            className="object-contain"
+            className="object-contain rounded-full"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <button className="text-gray-500 hover:text-black">
-            <Share2 size={16} />
-          </button>
-          <button className="text-gray-500 hover:text-black">
-            <Star size={16} />
-          </button>
+          <div className="flex items-center gap-1">
+            <Calendar size={14} />
+            <span>{job.schedule || "График не указан"}</span>
+          </div>
         </div>
       </div>
 
@@ -56,10 +54,7 @@ export default function JobCard({ job, isApplied }: JobCardProps) {
 
       {/* Info Footer */}
       <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
-        <div className="flex items-center gap-1">
-          <Calendar size={14} />
-          <span>{job.schedule || "График не указан"}</span>
-        </div>
+
         <div className="flex items-center gap-1">
           <MapPin size={14} />
           <span>{job.location || "Не указано"}</span>

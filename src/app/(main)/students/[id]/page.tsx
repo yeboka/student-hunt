@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import API from "@/lib/axios";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function StudentPage() {
@@ -37,10 +36,6 @@ export default function StudentPage() {
       {/* Header */}
       <div className="w-full flex justify-between items-center border-b px-4 py-3">
         <SidebarTrigger />
-        <div className="flex gap-3 items-center">
-          <p>Student mode</p>
-          <Switch checked disabled />
-        </div>
       </div>
 
       {/* Avatar + Info */}

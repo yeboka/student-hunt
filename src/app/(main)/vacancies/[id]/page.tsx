@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import API from "@/lib/axios";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import ApplyDialog from "@/components/modals/ApplyDialog"; // Импортируем новый компонент
+import ApplyDialog from "@/components/modals/ApplyDialog";
+import Link from "next/link"; // Импортируем новый компонент
 
 export default function JobDetailsPage() {
   const params = useParams();
@@ -14,11 +15,31 @@ export default function JobDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setDialogOpen] = useState(false); // Состояние для поп-апа
   const [hasApplied, setHasApplied] = useState(false); // Состояние для проверки, подался ли пользователь
-
+  const [advises, setAdvises] = useState<any[]>([])
+  const [complete, setComplete] = useState("")
+  const [adviseLoading, setAdviseLoading] = useState(true)
   const fetchJob = async () => {
     try {
       const res = await API.get(`/jobs/${jobId}`);
       setJob(res.data);
+    } catch (err) {
+      console.error("Ошибка при получении вакансии:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAdviseForJob = async () => {
+    try {
+      const res = await API.get(`/jobs/advise/${jobId}`);
+      const data = res.data;
+      if (data.ready == "none") {
+        setAdvises(data.advises)
+        setComplete("")
+      } else {
+        setAdvises([])
+        setComplete(data.ready)
+      }
     } catch (err) {
       console.error("Ошибка при получении вакансии:", err);
     } finally {
@@ -48,6 +69,7 @@ export default function JobDetailsPage() {
 
     if (jobId) {
       fetchJob();
+      fetchAdviseForJob().finally(() => setAdviseLoading(false));
       checkApplicationStatus(); // Проверка статуса отклика при загрузке страницы
     }
   }, [jobId]);
@@ -56,15 +78,15 @@ export default function JobDetailsPage() {
   if (!job) return <div className="p-10 text-red-500">Вакансия не найдена</div>;
 
   return (
-    <div className="flex w-full max-w-[1120px] gap-12 p-6">
+    <div className="flex w-full max-w-[1120px] gap-3 p-6">
       {/* Left Side - Job Details */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 w-full p-6">
         <div className="bg-white shadow-md rounded-xl p-6">
           {/* Job Header */}
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 relative">
               <Image
-                src={job.logo || "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"}
+                src={job.logo || "https://cdn-icons-png.freepik.com/256/4300/4300059.png"}
                 alt="Company Logo"
                 fill
                 className="object-contain"
@@ -121,11 +143,21 @@ export default function JobDetailsPage() {
       </div>
 
       {/* Right Side - Similar Jobs */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Похожие вакансии</h2>
+      <div className="space-y-4 max-w-[300px] h-fit bg-white shadow-md rounded-xl p-3 ">
+        <h2 className="text-lg font-semibold">Какие темы для этой вакансии стоит изучить</h2>
         <div className="flex flex-col space-y-4">
           {/* Можем добавить похожие вакансии позже */}
           {/* <JobCard /> */}
+          {complete && <p>{complete}</p>}
+          {adviseLoading && <div className={"w-full text-center animate-pulse my-5"}>
+              Обрабатываем данные
+          </div>}
+          {advises && advises.length > 0 && advises.map((advise) => {
+            return <div key={advise.text} className={"flex flex-col items-end"}>
+              <h2 className={""}>{advise.text}</h2>
+              <Link href={advise.link} target={"_blank"} className={"hover:underline "}>Ссылка 🔗</Link>
+            </div>
+          })}
         </div>
       </div>
 

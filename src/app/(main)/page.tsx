@@ -1,38 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import API from "@/lib/axios";
 import useSwitchState from "@/hooks/useSwitchState";
 import StudentCard from "@/components/shared/StudentCard";
-import JobCard from "@/components/shared/JobCart"; // твой axios инстанс
+import JobCard from "@/components/shared/JobCart";
+import Image from "next/image";
+import Link from "next/link"; // твой axios инстанс
 
 export default function Home() {
   const [items, setItems] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
   const [isChecked, setIsChecked] = useSwitchState("isStudent", false);
+  const [currJob, setCurrJob] = useState<any>(null)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (token) {
+        setIsLogged(true)
+      } else {
+        setIsLogged(false)
+      }
+    }
+  }, [])
 
   // Фетчим вакансии при загрузке
   useEffect(() => {
     setLoading(true);
-    if (!isChecked) {
-      fetchStudents("").finally(() => setLoading(false));
+
+    if (isLogged) {
+      if (!isChecked) {
+        fetchStudents("").finally(() => setLoading(false));
+      } else {
+        fetchJobs("").finally(() => setLoading(false));
+      }
     } else {
-      fetchJobs("").finally(() => setLoading(false));
+      setLoading(false)
     }
-  }, [isChecked]);
+  }, [isChecked, isLogged]);
 
   const fetchJobs = async (query?: string) => {
 
     try {
-      const res = await API.get("/jobs/search", {
+      const res = await API.get("/jobs/recommendations", {
         params: { query: query || "" },
       });
-      setItems(res.data);
+      setItems(res.data.jobs);
+      setCurrJob(null);
     } catch (error) {
       console.error("Ошибка при загрузке вакансий:", error);
     } finally {
@@ -42,28 +59,18 @@ export default function Home() {
 
   const fetchStudents = async (query?: string) => {
     try {
-      const res = await API.get("/students/search", {
+      const res = await API.get("/students/job", {
         params: { query: query || "" },
       });
-      setItems(res.data);
+      setItems(res.data.students);
+      setCurrJob(res.data.job);
     } catch (error) {
       console.error("Ошибка при загрузке вакансий:", error);
     }
   };
 
-  const handleSearch = () => {
-    setLoading(true);
-    if (!isChecked) {
-      fetchStudents(search).finally(() => setLoading(false));
-    } else {
-      fetchJobs(search).finally(() => setLoading(false));
-    }
-  };
-
-
   return (
     <div className="flex flex-col w-full items-center">
-      {/*Switcher container*/}
       <div className={"w-full flex justify-between items-center border-b p-3"}>
         <SidebarTrigger />
         <div className={"flex gap-3 items-center"}>
@@ -76,32 +83,44 @@ export default function Home() {
       </div>
 
       {/*Search container*/}
-      <div className={"flex items-center justify-center gap-5 p-5"}>
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Стажировка Front-end developer"
-          className={"w-[500px] max-w-[720px]"}
-        />
-        <Button onClick={handleSearch} className={"bg-[#C6790E]"}>
-          AI Search
-        </Button>
+      <div className={"flex flex-col items-center justify-center gap-5 p-5"}>
+        <h1
+          className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">
+          {isChecked ? "Вакансии" : "Студенты"} для вас
+        </h1>
+        <p>
+          {isChecked ? "Вакансии" : "Студенты"} подобранные ИИ {isChecked ? "на базе вашего резюме" : ""}
+        </p>
       </div>
 
       {/*Cards container*/}
       <div className={"p-5 w-full max-w-[1120px]"}>
-        <h1 className="text-2xl font-semibold text-gray-900 mb-5">
-          {search ? "Результаты поиска" : `Подходящие ${isChecked ? "вакансии" : "студенты"}`}
-        </h1>
+        {/*<h1 className="text-2xl font-semibold text-gray-900 mb-5">*/}
+        {/*  {search ? "Результаты поиска" : `Подходящие ${isChecked ? "вакансии" : "студенты"}`}*/}
+        {/*</h1>*/}
 
         {loading ? (
-          <p>Загрузка вакансий...</p>
+          <p className={"w-full text-center"}>Загрузка вакансий...</p>
+        ) : isLogged ? (
+          <div className="flex flex-col gap-4">
+            {currJob && <div>
+                <h3 className={"text-lg font-semibold"}>Студенты для вашей вакансии: <Link href={`/vacancies/${currJob?.id}`} className={"text-sky-600 cursor-pointer hover:underline"}>{currJob?.title}</Link></h3>
+            </div>}
+            <div className="flex flex-wrap gap-4">
+              {items.map((item) => {
+                if (isChecked) return <JobCard key={item.id} job={item}/>
+                else return <StudentCard key={item.id} student={item}/>
+              })}
+            </div>
+          </div>
         ) : (
-          <div className="flex flex-wrap gap-4">
-            {items.map((item) => {
-              if (isChecked) return <JobCard key={item.id} job={item}/>
-              else return <StudentCard key={item.id} student={item}/>
-            })}
+          <div
+            className="flex justify-center p-6">
+            <div className="bg-white flex flex-col items-center p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+              <Image src={'/login_illustration.svg'} width={300} height={400} alt={"Login Illustration"}/>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Авторизуйтесь и заполните свой профиль</h2>
+              <p className="text-gray-600 text-lg">Чтобы мы подобрали вам вакансию</p>
+            </div>
           </div>
         )}
       </div>

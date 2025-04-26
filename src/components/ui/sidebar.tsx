@@ -163,13 +163,14 @@ function Sidebar({
       <div
         data-slot="sidebar"
         className={cn(
-          "bg-[#0A6F6F] text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
+          "bg-gradient-to-r from-pink-200 via-yellow-200 to-teal-200 text-sidebar-foreground flex h-full w-64 flex-col",
           className
         )}
         {...props}
       >
         {children}
       </div>
+
     )
   }
 
@@ -237,7 +238,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className=" group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
         >
           {children}
         </div>
@@ -346,7 +347,7 @@ function SidebarFooter({className}: React.ComponentProps<"div">) {
     const token = localStorage.getItem("token");
     if (token) {
       // Запрос на получение данных профиля пользователя
-      fetch("https://studenthuntback-production.up.railway.app/api/profile", {
+      fetch("http://localhost:8080/api/profile", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
