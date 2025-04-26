@@ -22,7 +22,7 @@ export function AppSidebar() {
     const token = localStorage.getItem("token");
     if (token) {
       // Запрос на получение данных профиля пользователя
-      fetch("http://localhost:8080/api/profile", {
+      fetch("https://studenthuntback-production.up.railway.app/api/profile", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

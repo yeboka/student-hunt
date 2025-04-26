@@ -12,7 +12,7 @@ export default function LoginPage() {
   const handleLogin = async (data: { email: string; password: string }) => {
     setErrorMessage(null); // Сбрасываем сообщение об ошибке при новом запросе
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch("https://studenthuntback-production.up.railway.app/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

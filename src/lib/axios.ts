@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8080/api", // измени при деплое
+  baseURL: "https://studenthuntback-production.up.railway.app/api", // измени при деплое
   headers: {
     "Content-Type": "application/json",
   },
