@@ -346,8 +346,10 @@ function SidebarFooter({className}: React.ComponentProps<"div">) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      const url = process.env.NEXT_PUBLIC_API_URL;
+
       // Запрос на получение данных профиля пользователя
-      fetch("https://studenthuntback-production.up.railway.app/api/profile", {
+      fetch(`${url}/profile`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

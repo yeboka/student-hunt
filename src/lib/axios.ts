@@ -1,8 +1,7 @@
-// src/lib/axios.ts
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://studenthuntback-production.up.railway.app/api", // измени при деплое
+  baseURL: process.env.NEXT_PUBLIC_API_URL, // теперь берём из env
   headers: {
     "Content-Type": "application/json",
   },
@@ -23,7 +22,6 @@ API.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.warn("🔐 Unauthorized, возможно токен устарел");
-      // Можешь сделать редирект или logout
     }
     return Promise.reject(error);
   }
