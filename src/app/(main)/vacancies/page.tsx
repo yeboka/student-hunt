@@ -5,6 +5,7 @@ import JobCard from "@/components/shared/JobCart";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import API from "@/lib/axios";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Vacancies = () => {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -36,7 +37,10 @@ const Vacancies = () => {
   };
 
   return (
-    <div className={"w-full flex justify-center"}>
+    <div className={"w-full flex flex-col"}>
+      <div className="w-full flex justify-between items-center border-b px-4 py-3">
+        <SidebarTrigger />
+      </div>
       <div className={"flex w-full max-w-[1120px] flex-col items-center p-4"}>
         {/* Поисковая строка */}
         <div className={"flex items-center justify-center gap-5 p-5"}>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -134,10 +133,7 @@ export default function Profile() {
       {/* Switcher container */}
       <div className="w-full flex justify-between items-center border-b px-4 py-3">
         <SidebarTrigger />
-        <div className="flex gap-3 items-center">
-          <p>Student mode</p>
-          <Switch />
-        </div>
+
       </div>
 
       {/* Profile Header */}

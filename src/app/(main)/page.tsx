@@ -107,9 +107,9 @@ export default function Home() {
                 <h3 className={"text-lg font-semibold"}>Студенты для вашей вакансии: <Link href={`/vacancies/${currJob?.id}`} className={"text-sky-600 cursor-pointer hover:underline"}>{currJob?.title}</Link></h3>
             </div>}
             <div className="flex flex-wrap gap-4">
-              {items.map((item) => {
-                if (isChecked) return <JobCard key={item.id} job={item}/>
-                else return <StudentCard key={item.id} student={item}/>
+              {items.map((item, idx) => {
+                if (isChecked) return item ? <JobCard key={item.id} job={item}/> : <React.Fragment key={idx}></React.Fragment>
+                else return item ? <StudentCard key={item.id} student={item}/> : <React.Fragment key={idx}></React.Fragment>
               })}
             </div>
           </div>
