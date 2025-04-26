@@ -64,7 +64,10 @@ export default function Home() {
       });
       setItems(res.data.students);
       setCurrJob(res.data.job);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.status == 404) {
+        setItems([])
+      }
       console.error("Ошибка при загрузке вакансий:", error);
     }
   };
@@ -102,15 +105,22 @@ export default function Home() {
         {loading ? (
           <p className={"w-full text-center"}>Загрузка вакансий...</p>
         ) : isLogged ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 items-center">
             {currJob && <div>
                 <h3 className={"text-lg font-semibold"}>Студенты для вашей вакансии: <Link href={`/vacancies/${currJob?.id}`} className={"text-sky-600 cursor-pointer hover:underline"}>{currJob?.title}</Link></h3>
             </div>}
             <div className="flex flex-wrap gap-4">
-              {items.map((item, idx) => {
+              {items.length > 0 && items.map((item, idx) => {
                 if (isChecked) return item ? <JobCard key={item.id} job={item}/> : <React.Fragment key={idx}></React.Fragment>
                 else return item ? <StudentCard key={item.id} student={item}/> : <React.Fragment key={idx}></React.Fragment>
               })}
+              {
+                items.length === 0 && <div className={"flex flex-col items-center"}>
+                      <Image src={"https://img.freepik.com/free-vector/empty-box-concept-illustration_114360-29453.jpg?semt=ais_hybrid&w=740"} alt={""} width={300} height={300}/>
+                      <h1 className={"text-md font-semibold mb-5"}>Недостаточно данных что бы показать вам предложения </h1>
+                  <p className={"text-sm"}>Заполните данные профиля или создайте вакансию</p>
+                  </div>
+              }
             </div>
           </div>
         ) : (
