@@ -41,8 +41,8 @@ export default function CreateJobModal({ onClose, onCreate }: CreateJobModalProp
   };
 
   return (
-    <div className={"w-screen h-screen fixed overflow-y-scroll top-0 left-0 flex items-center justify-center p-20 bg-black/50"}>
-      <div className=" p-6 w-full mt-100 max-w-[500px] bg-white rounded-xl shadow-lg">
+    <div className={"w-screen h-screen fixed top-0 left-0 flex items-center justify-center p-20 bg-black/50 z-1000"} onClick={onClose}>
+      <div className=" p-6 w-full max-w-[500px] max-h-[700px] overflow-hidden overflow-y-scroll bg-white rounded-xl shadow-lg" onClick={(e) => {e.stopPropagation()}}>
         <h2 className="text-xl font-semibold mb-4">Создать вакансию</h2>
 
         <div className="mb-4">

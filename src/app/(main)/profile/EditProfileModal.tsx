@@ -6,15 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pen } from "lucide-react";
 import API from "@/lib/axios";
-import { useRouter } from "next/navigation"; // импортируем инстанс axios
 
 interface EditProfileModalProps {
   user: any; // Тип для данных пользователя
-  onClose: () => void;
+  // onClose: () => void;
   onUpdate: () => void;
 }
 
-export default function EditProfileModal({ user, onClose, onUpdate }: EditProfileModalProps) {
+export default function EditProfileModal({user, onUpdate}: EditProfileModalProps) {
   const [formData, setFormData] = useState({
     first_name: user.first_name || "",
     last_name: user.last_name || "",
@@ -25,12 +24,11 @@ export default function EditProfileModal({ user, onClose, onUpdate }: EditProfil
     skills: user.skills || "",
     available_time: user.available_time || "",
   });
-
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   // Обработчик изменения данных формы
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setFormData({
       ...formData,
       [name]: value,
@@ -41,28 +39,30 @@ export default function EditProfileModal({ user, onClose, onUpdate }: EditProfil
   const handleSubmit = async () => {
     setLoading(true);
 
-    try {
-      const response = await API.put("/profile", formData); // Отправляем запрос на обновление
-      if (response.status === 200) {
-        onUpdate(); // Обновляем профиль на странице
-        router.refresh()
-      }
-    } catch (error) {
-      console.error("Ошибка при обновлении профиля:", error);
-    } finally {
-      setLoading(false);
-    }
+    API.put("/profile", formData)
+      .then(() => {
+        onUpdate();
+        setOpen(false)
+        console.log("JSDFLJSDFLJSDLF")
+      })
+      .catch((error: any) => {
+        console.error("Ошибка при обновлении профиля:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="link" onClick={() => {}}>
-          <Pen />
+        <Button variant="link" onClick={() => {
+        }}>
+          <Pen/>
           Edit
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className={"max-h-[700px] overflow-hidden overflow-y-auto"}>
         <DialogTitle>Редактировать профиль</DialogTitle>
         <DialogDescription>
           <form className="space-y-4">
@@ -152,11 +152,8 @@ export default function EditProfileModal({ user, onClose, onUpdate }: EditProfil
             </div>
 
             <div className="flex justify-end gap-4 mt-4">
-              <Button variant="outline" onClick={onClose}>
-                Отмена
-              </Button>
               <Button
-                type="button"
+                type="submit"
                 onClick={handleSubmit}
                 disabled={loading}
                 className="bg-blue-500 text-white"

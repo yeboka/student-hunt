@@ -8,7 +8,8 @@ import useSwitchState from "@/hooks/useSwitchState";
 import StudentCard from "@/components/shared/StudentCard";
 import JobCard from "@/components/shared/JobCart";
 import Image from "next/image";
-import Link from "next/link"; // твой axios инстанс
+import Link from "next/link";
+import { FileUser } from "lucide-react"; // твой axios инстанс
 
 export default function Home() {
   const [items, setItems] = useState<any[]>([]);
@@ -46,7 +47,7 @@ export default function Home() {
 
     try {
       const res = await API.get("/jobs/recommendations", {
-        params: { query: query || "" },
+        params: {query: query || ""},
       });
       setItems(res.data.jobs);
       setCurrJob(null);
@@ -60,7 +61,7 @@ export default function Home() {
   const fetchStudents = async (query?: string) => {
     try {
       const res = await API.get("/students/job", {
-        params: { query: query || "" },
+        params: {query: query || ""},
       });
       setItems(res.data.students);
       setCurrJob(res.data.job);
@@ -75,7 +76,7 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full items-center">
       <div className={"w-full flex justify-between items-center border-b p-3"}>
-        <SidebarTrigger />
+        <SidebarTrigger/>
         <div className={"flex gap-3 items-center"}>
           <p>Student mode</p>
           <Switch
@@ -107,18 +108,27 @@ export default function Home() {
         ) : isLogged ? (
           <div className="flex flex-col gap-4 items-center">
             {currJob && <div>
-                <h3 className={"text-lg font-semibold"}>Студенты для вашей вакансии: <Link href={`/vacancies/${currJob?.id}`} className={"text-sky-600 cursor-pointer hover:underline"}>{currJob?.title}</Link></h3>
+                <h3 className={"text-lg font-semibold"}>Студенты для вашей вакансии: <Link
+                    href={`/vacancies/${currJob?.id}`}
+                    className={"text-sky-600 cursor-pointer hover:underline"}>{currJob?.title}</Link></h3>
             </div>}
             <div className="flex flex-wrap gap-4">
               {items.length > 0 && items.map((item, idx) => {
-                if (isChecked) return item ? <JobCard key={item.id} job={item}/> : <React.Fragment key={idx}></React.Fragment>
-                else return item ? <StudentCard key={item.id} student={item}/> : <React.Fragment key={idx}></React.Fragment>
+                if (isChecked) return item ? <JobCard key={item.id} job={item}/> :
+                  <React.Fragment key={idx}></React.Fragment>
+                else return item ? <StudentCard key={item.id} student={item}/> :
+                  <React.Fragment key={idx}></React.Fragment>
               })}
               {
                 items.length === 0 && <div className={"flex flex-col items-center"}>
-                      <Image src={"https://img.freepik.com/free-vector/empty-box-concept-illustration_114360-29453.jpg?semt=ais_hybrid&w=740"} alt={""} width={300} height={300}/>
+                      <Image
+                          src={"https://img.freepik.com/free-vector/empty-box-concept-illustration_114360-29453.jpg?semt=ais_hybrid&w=740"}
+                          alt={""} width={300} height={300}/>
                       <h1 className={"text-md font-semibold mb-5"}>Недостаточно данных что бы показать вам предложения </h1>
-                  <p className={"text-sm"}>Заполните данные профиля или создайте вакансию</p>
+                      <p className={"text-sm"}>Заполните данные профиля или создайте вакансию</p>
+                      <Link href={"/profile"} className={"hover:underline text-sm text-[#8580FF] flex items-center mt-4  gap-1"}>
+                          Перейти в профиль <FileUser />
+                      </Link>
                   </div>
               }
             </div>

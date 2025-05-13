@@ -155,7 +155,7 @@ export default function Profile() {
               </h1>
               <p className="text-sm text-muted-foreground">{user.description}</p>
             </div>
-            <EditProfileModal user={user} onClose={() => {}} onUpdate={fetchProfile} />
+            <EditProfileModal user={user} onUpdate={fetchProfile} />
           </div>
         </div>
       </div>
@@ -200,22 +200,6 @@ export default function Profile() {
       {/*  </div>*/}
       {/*</div>*/}
 
-      {selectedExperience && (
-        <EditExperienceModal
-          experience={selectedExperience}
-          onClose={() => setSelectedExperience(null)} // Закрываем модалку
-          onUpdate={fetchProfile} // Обновляем профиль после изменений
-        />
-      )}
-
-      {/* Модалка для добавления опыта */}
-      {isAddExperienceModalOpen && (
-        <AddExperienceModal
-          onClose={closeAddExperienceModal} // Закрытие модалки
-          onUpdate={fetchProfile} // Обновление профиля после добавления нового опыта
-        />
-      )}
-
       {/* Карточки вакансий */}
       <div className="mt-6 w-full max-w-[1120px]">
         <div className={"w-full flex justify-between"}>
@@ -236,6 +220,22 @@ export default function Profile() {
           ))}
         </div>
       </div>
+
+      {selectedExperience && (
+        <EditExperienceModal
+          experience={selectedExperience}
+          onClose={() => setSelectedExperience(null)} // Закрываем модалку
+          onUpdate={fetchProfile} // Обновляем профиль после изменений
+        />
+      )}
+
+      {/* Модалка для добавления опыта */}
+      {isAddExperienceModalOpen && (
+        <AddExperienceModal
+          onClose={closeAddExperienceModal} // Закрытие модалки
+          onUpdate={fetchProfile} // Обновление профиля после добавления нового опыта
+        />
+      )}
 
       {/* Модалка редактирования вакансии */}
       {isJobModalOpen && (
