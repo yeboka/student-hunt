@@ -8,9 +8,11 @@ import { useState } from "react";
 export default function LoginPage() {
   const router = useRouter(); // Хук для перехода
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Состояние для ошибок
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleLogin = async (data: { email: string; password: string }) => {
     setErrorMessage(null); // Сбрасываем сообщение об ошибке при новом запросе
+    setIsLoading(true);
     try {
       const url = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(`${url}/auth/login`, {
@@ -34,13 +36,15 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Error during login:", error);
       setErrorMessage("Произошла ошибка при входе. Попробуйте позже.");
+    } finally {
+      setIsLoading(false)
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center p-5 w-full h-screen">
       <h1 className="text-2xl mb-4">Войти</h1>
-      <AuthForm mode="login" onSubmit={handleLogin} />
+      <AuthForm mode="login" isLoading={isLoading} onSubmit={handleLogin} />
       {errorMessage && (
         <div className="mt-4 text-red-500 text-sm">{errorMessage}</div> // Ошибка отображается под формой
       )}

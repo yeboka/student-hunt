@@ -22,10 +22,11 @@ type FormData = z.infer<typeof validationSchema>;
 
 interface AuthFormProps {
   mode: "login" | "register";
+  isLoading: boolean;
   onSubmit: (data: FormData) => void;
 }
 
-export const AuthForm = ({ mode, onSubmit }: AuthFormProps) => {
+export const AuthForm = ({ mode, isLoading, onSubmit }: AuthFormProps) => {
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(validationSchema),
   });
@@ -106,9 +107,17 @@ export const AuthForm = ({ mode, onSubmit }: AuthFormProps) => {
         <span>{isPasswordVisible ? "Скрыть пароль" : "Показать пароль"}</span>
       </div>
 
-      <Button type="submit" className="bg-[#C6790E]">
-        {mode === "register" ? "Зарегистрироваться" : "Войти"}
-      </Button>
+      {
+        isLoading ?
+          <Button type="button" disabled={true} className="bg-[#C6790E]">
+            {mode === "register" ? "Регистрация..." : "Вход..."}
+          </Button>
+          :
+          <Button type="submit" disabled={isLoading} className="bg-[#C6790E]">
+            {mode === "register" ? "Зарегистрироваться" : "Войти"}
+          </Button>
+      }
+
     </form>
   );
 };
